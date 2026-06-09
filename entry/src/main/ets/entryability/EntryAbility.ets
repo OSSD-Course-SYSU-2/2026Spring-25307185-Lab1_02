@@ -18,6 +18,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import { CommonConstants } from '../common/CommonConstants';
 import { Logger } from '../utils/Logger';
+import { DeviceUtils } from '../utils/DeviceUtils';
 
 const DOMAIN = 0x0000;
 
@@ -49,6 +50,9 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+
+    // Initialize device utils for multi-device adaptation
+    DeviceUtils.init();
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {

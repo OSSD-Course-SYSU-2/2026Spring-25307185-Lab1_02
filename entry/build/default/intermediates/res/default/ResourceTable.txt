@@ -38,6 +38,8 @@ string setting 0x01000023
 string ui_presentation 0x01000024
 string volume_key_down 0x01000025
 string volume_key_up 0x01000026
+string volume_keys_disabled 0x01000040
+string volume_keys_enabled 0x01000041
 color start_window_background 0x01000027
 color white_33 0x01000028
 color white_99 0x01000029

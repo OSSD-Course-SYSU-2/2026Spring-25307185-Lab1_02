@@ -36,6 +36,7 @@ export class AudioRendererController {
 
   // Initialization AudioRenderer.
   public async initAudioRenderer(fd: number, offset: number, length: number): Promise<void> {
+    Logger.info('AudioRendererController', `Initializing audio renderer: fd=${fd}, offset=${offset}, length=${length}`);
     this.fd = fd; // File descriptor.
     this.offset = offset; // Start offset.
     this.currentOffset = offset; // Current offset.
@@ -59,19 +60,27 @@ export class AudioRendererController {
       rendererInfo: audioRendererInfo
     };
     // Get audio renderer.
-    await audio.createAudioRenderer(audioRendererOptions).then((data) => {
-      this.audioRenderer = data;
+    Logger.info('AudioRendererController', `Creating audio renderer with options: ${JSON.stringify(audioRendererOptions)}`);
+    try {
+      this.audioRenderer = await audio.createAudioRenderer(audioRendererOptions);
       if (this.audioRenderer) {
+        Logger.info('AudioRendererController', 'Audio renderer created successfully');
         try {
           // Set the focus model to independent focus mode.
           this.audioRenderer.setInterruptMode(audio.InterruptMode.INDEPENDENT_MODE);
           this.setAudioStateChangeCallBack();
           this.setWriteDataCallback(); // Write audio data.
+          Logger.info('AudioRendererController', 'Audio renderer initialized successfully');
         } catch (error) {
-          Logger.error('createAudioRenderer is calling.');
+          Logger.error('AudioRendererController', `Failed to configure audio renderer: ${JSON.stringify(error)}`);
         }
+      } else {
+        Logger.error('AudioRendererController', 'Audio renderer creation returned undefined');
       }
-    });
+    } catch (error) {
+      Logger.error('AudioRendererController', `Failed to create audio renderer: ${JSON.stringify(error)}`);
+      throw new Error(`Failed to create audio renderer: ${JSON.stringify(error)}`);
+    }
     // Convert the file length to the corresponding number of milliseconds and store it in AppStorage.
     AppStorage.setOrCreate('progressMax', MediaTools.getMsFromByteLength(this.length));
     // Convert the file length to the corresponding number of milliseconds, then convert it to a timestamp and store it in AppStorage.

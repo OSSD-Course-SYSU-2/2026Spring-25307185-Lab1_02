@@ -5,6 +5,8 @@ interface Index_Params {
     pathStack?: NavPathStack;
     introductions?: string[];
 }
+import { DeviceUtils } from "@normalized:N&&&entry/src/main/ets/utils/DeviceUtils&";
+import { Logger } from "@normalized:N&&&entry/src/main/ets/utils/Logger&";
 class Index extends ViewPU {
     constructor(parent, params, __localStorage, elmtId = -1, paramsLambda = undefined, extraInfo) {
         super(parent, __localStorage, elmtId, extraInfo);
@@ -46,16 +48,16 @@ class Index extends ViewPU {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Column.create();
             Column.padding({
-                left: 16,
-                top: 36
+                left: DeviceUtils.getResponsivePadding(16),
+                top: DeviceUtils.getResponsivePadding(36)
             });
             Column.alignItems(HorizontalAlign.End);
-            Column.margin({ top: 36 });
+            Column.margin({ top: DeviceUtils.getResponsiveMargin(36) });
             Column.width('100%');
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create({ "id": 16777223, "type": 10003, params: [], "bundleName": "com.example.audiostreamvolumemanagement", "moduleName": "entry" });
-            Text.fontSize(30);
+            Text.fontSize(DeviceUtils.getResponsiveFontSize(30));
             Text.fontWeight(FontWeight.Bold);
             Text.width('100%');
             Text.height(56);
@@ -76,10 +78,10 @@ class Index extends ViewPU {
             Column.width('100%');
             Column.height('100%');
             Column.padding({
-                left: 16,
-                right: 16,
-                top: 16,
-                bottom: 164
+                left: DeviceUtils.getResponsivePadding(16),
+                right: DeviceUtils.getResponsivePadding(16),
+                top: DeviceUtils.getResponsivePadding(16),
+                bottom: DeviceUtils.getResponsivePadding(164)
             });
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -88,21 +90,21 @@ class Index extends ViewPU {
             Column.height('auto');
             Column.alignItems(HorizontalAlign.Start);
             Column.padding({
-                left: 12,
-                right: 12,
-                bottom: 12,
-                top: 12
+                left: DeviceUtils.getResponsivePadding(12),
+                right: DeviceUtils.getResponsivePadding(12),
+                bottom: DeviceUtils.getResponsivePadding(12),
+                top: DeviceUtils.getResponsivePadding(12)
             });
             Column.backgroundColor('#F1F3F5');
             Column.borderRadius(16);
         }, Column);
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Text.create({ "id": 16777241, "type": 10003, params: [], "bundleName": "com.example.audiostreamvolumemanagement", "moduleName": "entry" });
-            Text.fontSize(15);
-            Text.lineHeight(20);
+            Text.fontSize(DeviceUtils.getResponsiveFontSize(15));
+            Text.lineHeight(DeviceUtils.getResponsiveFontSize(20));
             Text.fontWeight(FontWeight.Bold);
             Text.width('100%');
-            Text.margin({ bottom: 8 });
+            Text.margin({ bottom: DeviceUtils.getResponsiveMargin(8) });
         }, Text);
         Text.pop();
         this.observeComponentCreation2((elmtId, isInitialRender) => {
@@ -111,9 +113,9 @@ class Index extends ViewPU {
                 const item = _item;
                 this.observeComponentCreation2((elmtId, isInitialRender) => {
                     Text.create({ "id": -1, "type": -1, params: [item], "bundleName": "com.example.audiostreamvolumemanagement", "moduleName": "entry" });
-                    Text.fontSize(13);
+                    Text.fontSize(DeviceUtils.getResponsiveFontSize(13));
                     Text.opacity(0.6);
-                    Text.lineHeight(20);
+                    Text.lineHeight(DeviceUtils.getResponsiveFontSize(20));
                 }, Text);
                 Text.pop();
             };
@@ -130,7 +132,14 @@ class Index extends ViewPU {
             Button.width('100%');
             Button.buttonStyle(ButtonStyleMode.NORMAL);
             Button.onClick(() => {
-                this.pathStack.pushPathByName('player', null);
+                Logger.info('Index', 'Playback page button clicked, navigating to player page');
+                try {
+                    this.pathStack.pushPathByName('player', null);
+                    Logger.info('Index', 'Navigation to player page initiated');
+                }
+                catch (error) {
+                    Logger.error('Index', `Failed to navigate to player page: ${JSON.stringify(error)}`);
+                }
             });
         }, Button);
         Button.pop();

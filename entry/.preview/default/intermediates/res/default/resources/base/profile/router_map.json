@@ -1,0 +1,20 @@
+{
+  "routerMap": [
+    {
+      "name": "player",
+      "pageSourceFile": "src/main/ets/pages/Player.ets",
+      "buildFunction": "PlayerBuilder",
+      "data": {
+        "description": "this is player page"
+      }
+    },
+    {
+      "name": "EQPage",
+      "pageSourceFile": "src/main/ets/pages/EQPage.ets",
+      "buildFunction": "EQPageBuilder",
+      "data": {
+        "description": "this is EQ settings page"
+      }
+    }
+  ]
+}

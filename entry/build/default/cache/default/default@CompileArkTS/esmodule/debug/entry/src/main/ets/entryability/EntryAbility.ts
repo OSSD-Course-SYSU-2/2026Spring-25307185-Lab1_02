@@ -6,6 +6,7 @@ import hilog from "@ohos:hilog";
 import type window from "@ohos:window";
 import { CommonConstants } from "@normalized:N&&&entry/src/main/ets/common/CommonConstants&";
 import { Logger } from "@normalized:N&&&entry/src/main/ets/utils/Logger&";
+import { DeviceUtils } from "@normalized:N&&&entry/src/main/ets/utils/DeviceUtils&";
 const DOMAIN = 0x0000;
 export default class EntryAbility extends UIAbility {
     onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -31,6 +32,8 @@ export default class EntryAbility extends UIAbility {
     onWindowStageCreate(windowStage: window.WindowStage): void {
         // Main window is created, set main page for this ability
         hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+        // Initialize device utils for multi-device adaptation
+        DeviceUtils.init();
         windowStage.loadContent('pages/Index', (err) => {
             if (err.code) {
                 hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));

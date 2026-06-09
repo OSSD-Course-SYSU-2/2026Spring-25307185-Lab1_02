@@ -20,6 +20,7 @@ import { Logger } from '../utils/Logger';
 import { AudioRendererController } from '../player/AudioRendererController';
 import { CommonConstants } from '../common/CommonConstants';
 import { AudioName, imageList } from '../viewModel/PlayerViewModel';
+import { DeviceUtils } from '../utils/DeviceUtils';
 
 @Component
 export struct ControlAreaComponent {
@@ -38,6 +39,10 @@ export struct ControlAreaComponent {
   private audioRendererController: AudioRendererController = new AudioRendererController();
 
   aboutToAppear(): void {
+    // Log device type for debugging
+    const deviceType = DeviceUtils.getDeviceType();
+    Logger.info('ControlAreaComponent', `Device type: ${deviceType}, loading audio file: ${this.songData.src + AudioName.PCM}`);
+    
     this.symbolGlyphModifier
       .fontSize(12)
       .fontColor(['#999999'])
@@ -48,14 +53,49 @@ export struct ControlAreaComponent {
       .textAlign(TextAlign.Start)
       .fontWeight(FontWeight.Bold)
       .width(160)
-    this.getUIContext().getHostContext()?.resourceManager.getRawFd(this.songData.src + AudioName.PCM)
+    
+    // Check if context is available
+    const context = this.getUIContext();
+    if (!context) {
+      Logger.error('ControlAreaComponent', 'UIContext is not available');
+      return;
+    }
+    
+    const hostContext = context.getHostContext();
+    if (!hostContext) {
+      Logger.error('ControlAreaComponent', 'HostContext is not available');
+      return;
+    }
+    
+    if (!hostContext.resourceManager) {
+      Logger.error('ControlAreaComponent', 'ResourceManager is not available');
+      return;
+    }
+    
+    Logger.info('ControlAreaComponent', 'Attempting to load audio file...');
+    hostContext.resourceManager.getRawFd(this.songData.src + AudioName.PCM)
       .then((rawFileDescriptor) => {
+        Logger.info('ControlAreaComponent', `Audio file loaded successfully: fd=${rawFileDescriptor.fd}, offset=${rawFileDescriptor.offset}, length=${rawFileDescriptor.length}`);
         this.audioRendererController.initAudioRenderer(rawFileDescriptor.fd, rawFileDescriptor.offset,
           rawFileDescriptor.length);
         AppStorage.setOrCreate('audioRendererController', this.audioRendererController);
+        Logger.info('ControlAreaComponent', 'AudioRendererController initialized and stored in AppStorage');
       })
       .catch((error: BusinessError) => {
-        Logger.error(`resourceManager error code ${error.code} message ${error.message}`);
+        Logger.error(`ControlAreaComponent resourceManager error code ${error.code} message ${error.message}`);
+        // Try alternative path without spaces if needed
+        const altPath = this.songData.src.replace(/ /g, '_') + AudioName.PCM;
+        Logger.info('ControlAreaComponent', `Trying alternative path: ${altPath}`);
+        hostContext.resourceManager.getRawFd(altPath)
+          .then((rawFileDescriptor) => {
+            Logger.info('ControlAreaComponent', `Audio file loaded with alternative path: fd=${rawFileDescriptor.fd}`);
+            this.audioRendererController.initAudioRenderer(rawFileDescriptor.fd, rawFileDescriptor.offset,
+              rawFileDescriptor.length);
+            AppStorage.setOrCreate('audioRendererController', this.audioRendererController);
+          })
+          .catch((altError: BusinessError) => {
+            Logger.error(`ControlAreaComponent alternative path also failed: code ${altError.code} message ${altError.message}`);
+          });
       });
   }
 

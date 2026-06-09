@@ -29,6 +29,7 @@ import { CommonConstants } from '../common/CommonConstants';
 import { window } from '@kit.ArkUI';
 import { AudioRendererController } from '../player/AudioRendererController';
 import router from '@ohos.router';
+import { DeviceUtils } from '../utils/DeviceUtils';
 
 @Builder
 export function PlayerBuilder(name: string, param: Object) {
@@ -45,9 +46,9 @@ struct Player {
   @State windowHeight: number = 300;
   @StorageLink('systemVolume') volume: number = CommonConstants.INITIAL_VOLUME;
   @State systemVolumeVisible: boolean = false;
-  @StorageLink('isDisabled') isDisabled: boolean = false;
-  @StorageLink('autoBalanceEnabled') autoBalanceEnabled: boolean = CommonConstants.DEFAULT_AUTO_BALANCE_ENABLED;
-  @StorageLink('compressionRatio') compressionRatio: number = CommonConstants.DEFAULT_COMPRESSION_RATIO;
+  @StorageLink('isDisabled') @Watch('onIsDisabledChange') isDisabled: boolean = false;
+  @StorageLink('autoBalanceEnabled') @Watch('onAutoBalanceEnabledChange') autoBalanceEnabled: boolean = CommonConstants.DEFAULT_AUTO_BALANCE_ENABLED;
+  @StorageLink('compressionRatio') @Watch('onCompressionRatioChange') compressionRatio: number = CommonConstants.DEFAULT_COMPRESSION_RATIO;
   @StorageLink('eqEnabled') @Watch('onEQEnabledChange') eqEnabled: boolean = CommonConstants.DEFAULT_EQ_ENABLED;
   @StorageLink('eqMode') @Watch('onEQModeChange') eqMode: number = CommonConstants.DEFAULT_EQ_MODE;
   @StorageLink('eqBands') @Watch('onEQBandsChange') eqBands: number[] = CommonConstants.DEFAULT_EQ_PRESET;
@@ -67,6 +68,8 @@ struct Player {
 
   aboutToAppear(): void {
     this.getImageColor();
+    this.sheetHeight = DeviceUtils.getResponsivePadding(340);
+    this.windowHeight = DeviceUtils.getScreenHeight();
     this.keyIntercept();
     this.audioRendererController = AppStorage.get('audioRendererController');
     
@@ -104,6 +107,11 @@ struct Player {
   }
 
   keyIntercept(): void {
+    // Only register volume key listeners on devices that support volume keys
+    if (!DeviceUtils.supportsVolumeKeys()) {
+      Logger.info('Player', 'Volume keys not supported on this device, skipping key intercept');
+      return;
+    }
     try {
       let options1: inputConsumer.KeyPressedConfig = {
         key: KeyCode.KEYCODE_VOLUME_UP,
@@ -181,9 +189,9 @@ struct Player {
             })
         )
         .zIndex(5)
-        .height(280)
+        .height(DeviceUtils.getResponsivePadding(280))
         .width('100%')
-        .margin({ bottom: 200 })
+        .margin({ bottom: DeviceUtils.getResponsiveMargin(200) })
 
         Image(this.imageLabel)
           .size({ height: '120%' })
@@ -200,7 +208,8 @@ struct Player {
         }
         .height('100%')
         .width('100%')
-        .padding({ top: 12, bottom: 36 })
+        .zIndex(10)  // 确保主内容区域在SystemVolumePanel之上
+        .padding({ top: DeviceUtils.getResponsivePadding(12), bottom: DeviceUtils.getResponsivePadding(36) })
       }
       .height('100%')
       .width('100%')
@@ -221,35 +230,42 @@ struct Player {
       Row() {
         Row() {
           Image($r('app.media.chevron_left'))
-            .width(20)
-            .height(20)
+            .width(DeviceUtils.getResponsiveFontSize(20))
+            .height(DeviceUtils.getResponsiveFontSize(20))
         }
-        .width(42)
-        .height(42)
-        .borderRadius(42)
+        .width(DeviceUtils.getResponsivePadding(42))
+        .height(DeviceUtils.getResponsivePadding(42))
+        .borderRadius(DeviceUtils.getResponsivePadding(42))
         .backgroundColor('#19FFFFFF')
         .justifyContent(FlexAlign.Center)
         .onClick(() => {
           this.pageInfos.pop();
         })
 
-        Row() {
+        Button({ type: ButtonType.Circle }) {
           Image($r('app.media.slider_horizontal_2'))
-            .width(24)
-            .height(24)
+            .width(DeviceUtils.getResponsiveFontSize(24))
+            .height(DeviceUtils.getResponsiveFontSize(24))
         }
-        .width(42)
-        .height(42)
-        .borderRadius(42)
-        .backgroundColor('#19FFFFFF')
-        .justifyContent(FlexAlign.Center)
+        .width(DeviceUtils.getResponsivePadding(56))
+        .height(DeviceUtils.getResponsivePadding(56))
+        .backgroundColor('#33FFFFFF')
+        .zIndex(10)  // 提高zIndex确保按钮在最上层
         .bindSheet($$this.isShow, this.volumeSettingBuilder, {
-          height: this.sheetHeight,
+          height: this.windowHeight * 0.7,
           backgroundColor: '#FFFFFF',
-          title: { title: $r('app.string.setting') }
+          title: { title: $r('app.string.setting') },
+          shouldDismiss: ((sheetDismiss: SheetDismiss) => {
+            // 点击外部区域、下拉关闭、点击关闭按钮时调用
+            sheetDismiss.dismiss();
+          })
         })
         .onClick(() => {
+          Logger.info('Player', '=== SETTINGS BUTTON CLICKED ===');
+          Logger.info('Player', `isShow before: ${this.isShow}`);
+          Logger.info('Player', `windowHeight: ${this.windowHeight}`);
           this.isShow = true;
+          Logger.info('Player', `isShow after: ${this.isShow}`);
         })
       }
       .justifyContent(FlexAlign.SpaceBetween)
@@ -257,9 +273,9 @@ struct Player {
     }
     .alignItems(HorizontalAlign.End)
     .padding({
-      top: 36,
-      right: 16,
-      left: 16
+      top: DeviceUtils.getResponsivePadding(36),
+      right: DeviceUtils.getResponsivePadding(16),
+      left: DeviceUtils.getResponsivePadding(16)
     })
     .width('100%')
   }
@@ -288,7 +304,7 @@ struct Player {
     Column() {
       Flex({ justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.Center }) {
         Text(songDataList[0].title)
-          .fontSize(20)
+          .fontSize(DeviceUtils.getResponsiveFontSize(20))
           .fontColor(Color.White)
           .opacity(0.86)
           .fontWeight(FontWeight.Bold)
@@ -297,17 +313,17 @@ struct Player {
 
       Text(songDataList[0].singer)
         .textAlign(TextAlign.Start)
-        .fontSize(14)
+        .fontSize(DeviceUtils.getResponsiveFontSize(14))
         .fontColor('#99FFFFFF')
         .fontFamily('HarmonyHeiTi')
         .width('100%')
         .fontWeight(FontWeight.Regular)
     }
     .padding({
-      right: 24,
-      left: 24
+      right: DeviceUtils.getResponsivePadding(24),
+      left: DeviceUtils.getResponsivePadding(24)
     })
-    .margin({ top: 24 })
+    .margin({ top: DeviceUtils.getResponsiveMargin(24) })
   }
 
   getImageColor() {
@@ -366,6 +382,43 @@ struct Player {
     this.reapplyEQSettings();
   }
 
+  // Called when auto balance enabled state changes
+  onAutoBalanceEnabledChange(): void {
+    Logger.info('Player', `Auto balance enabled changed to: ${this.autoBalanceEnabled}`);
+    this.reapplyVolumeSettings();
+  }
+
+  // Called when compression ratio changes
+  onCompressionRatioChange(): void {
+    Logger.info('Player', `Compression ratio changed to: ${this.compressionRatio}`);
+    this.reapplyVolumeSettings();
+  }
+
+  // Called when isDisabled state changes
+  onIsDisabledChange(): void {
+    Logger.info('Player', `isDisabled changed to: ${this.isDisabled}`);
+    // Update UI or perform actions when disabled state changes
+    if (this.isDisabled) {
+      Logger.info('Player', 'Volume controls disabled');
+      try {
+        this.getUIContext().getPromptAction().showToast({ 
+          message: $r('app.string.volume_keys_disabled') 
+        });
+      } catch (error) {
+        Logger.error('Player', `Failed to show toast: ${JSON.stringify(error)}`);
+      }
+    } else {
+      Logger.info('Player', 'Volume controls enabled');
+      try {
+        this.getUIContext().getPromptAction().showToast({ 
+          message: $r('app.string.volume_keys_enabled') 
+        });
+      } catch (error) {
+        Logger.error('Player', `Failed to show toast: ${JSON.stringify(error)}`);
+      }
+    }
+  }
+
   // Re-apply EQ settings to audio renderer
   private reapplyEQSettings(): void {
     if (this.audioRendererController) {
@@ -374,6 +427,18 @@ struct Player {
       Logger.info('Player', `EQ settings changed - Enabled: ${this.eqEnabled}, Mode: ${this.eqMode}, Bands: ${JSON.stringify(this.eqBands)}`);
     } else {
       Logger.warn('Player', 'audioRendererController is undefined, cannot reapply EQ settings');
+    }
+  }
+
+  // Re-apply volume settings (including auto balance and compression)
+  private reapplyVolumeSettings(): void {
+    if (this.audioRendererController) {
+      Logger.info('Player', `Re-applying volume settings - Auto balance: ${this.autoBalanceEnabled}, Compression ratio: ${this.compressionRatio}`);
+      // Trigger volume re-application by getting current volume and setting it again
+      const currentVolume = this.volume;
+      this.audioRendererController.setVolume(currentVolume);
+    } else {
+      Logger.warn('Player', 'audioRendererController is undefined, cannot reapply volume settings');
     }
   }
 }
@@ -512,9 +577,18 @@ struct VolumeSettingComponent {
           .fontColor('#0A59F7')
           .onClick(() => {
             // Navigate to EQ page
-            router.pushUrl({
-              url: 'pages/EQPage'
-            })
+            Logger.info('VolumeSettingComponent', 'EQ Settings button clicked, navigating to EQPage');
+            try {
+              router.pushUrl({
+                url: 'pages/EQPage'
+              }).then(() => {
+                Logger.info('VolumeSettingComponent', 'Navigation to EQPage successful');
+              }).catch((error: BusinessError) => {
+                Logger.error('VolumeSettingComponent', `Failed to navigate to EQPage: ${JSON.stringify(error)}`);
+              });
+            } catch (error) {
+              Logger.error('VolumeSettingComponent', `Navigation error: ${JSON.stringify(error)}`);
+            }
           })
           .margin({ bottom: 12 })
       }
@@ -523,7 +597,7 @@ struct VolumeSettingComponent {
     }
     .backgroundColor('#FFFFFF')
     .width('100%')
-    .height(500)
+    .height('100%')
     .padding({
       top: 12,
       bottom: 16

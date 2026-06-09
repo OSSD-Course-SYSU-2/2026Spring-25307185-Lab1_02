@@ -255,5 +255,13 @@
 			"type":	"string",
 			"name":	"enable_eq",
 			"id":	"0x0100003F"
+		}, {
+			"type":	"string",
+			"name":	"volume_keys_disabled",
+			"id":	"0x01000040"
+		}, {
+			"type":	"string",
+			"name":	"volume_keys_enabled",
+			"id":	"0x01000041"
 		}]
 }

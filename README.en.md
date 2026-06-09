@@ -4,7 +4,7 @@
 
 This project is developed based on Huawei's official demo code for [audio-volume-management](https://gitcode.com/HarmonyOS_Samples/audio-volume-management).
 
-This case demonstrates how to get volume, set volume, use gestures to adjust volume, customize volume panels, disable volume keys, implement automatic volume balancing, and 10-band equalizer (EQ) adjustment functionality.
+This case demonstrates how to get volume, set volume, use gestures to adjust volume, customize volume panels, disable volume keys, implement automatic volume balancing, and 10-band equalizer (EQ) adjustment functionality，and it supports multi-platform deployment.
 
 ## Main Features
 - ✅ System volume management
@@ -105,9 +105,46 @@ Fixed the issue where EQ adjustments were not taking effect. Main improvements i
    - Added EQ test logging when Player starts
    - Enhanced error handling and state validation
 
+## Multi-Device Deployment Support
+
+This project supports HarmonyOS multi-device deployment capabilities and can run on the following device types:
+
+- **Phone** - Full feature support
+- **Tablet** - Full feature support, adapted for large screen display
+- **Smart TV** - Full feature support, adapted for TV interface
+- **Car Head Unit** - Full feature support, adapted for in-car scenarios
+- **Wearable** - Basic feature support, adapted for small screen display
+
+### Adaptation Features
+
+1. **Responsive Layout**: Uses the `DeviceUtils` utility class to implement adaptive layouts, automatically adjusting UI element sizes and spacing based on device screen dimensions
+2. **Unified API Interface**: Uses HarmonyOS unified APIs to ensure functional consistency across different devices
+3. **Device Capability Detection**: Automatically detects device audio capabilities and adapts to different device audio systems
+4. **Touch Interaction Optimization**: Optimizes touch interaction experience for different device types
+
+### Development Considerations
+
+- Use `@Entry` and `@Component` decorators to ensure component compatibility across different devices
+- Declare supported device types through the `deviceTypes` field in `module.json5`
+- Utilize ArkUI adaptive layout capabilities to ensure good UI display across different screen sizes
+- Test audio API compatibility for different device types
+
 ## Constraints and Limitations
 
-1. This example only runs on standard systems, supported devices: Huawei phones.
+1. This example supports running on the following HarmonyOS devices:
+   - Phone
+   - Tablet
+   - Smart TV
+   - Car Head Unit
+   - Wearable
+
 2. HarmonyOS system: HarmonyOS 6.0.0 Release and above.
+
 3. DevEco Studio version: DevEco Studio 6.0.0 Release and above.
+
 4. HarmonyOS SDK version: HarmonyOS 6.0.0 Release SDK and above.
+
+5. Audio API support:
+   - Audio capabilities may vary across different device types
+   - Some advanced audio features may be limited on wearable devices
+   - It is recommended to test audio playback and volume control functionality on actual devices

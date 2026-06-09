@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 
+import { DeviceUtils } from '../utils/DeviceUtils';
+import { Logger } from '../utils/Logger';
+
 @Entry
 @Component
 struct Index {
@@ -31,17 +34,17 @@ struct Index {
   NavigationTitle() {
     Column() {
       Text($r('app.string.audio_volume_control'))
-        .fontSize(30)
+        .fontSize(DeviceUtils.getResponsiveFontSize(30))
         .fontWeight(FontWeight.Bold)
         .width('100%')
         .height(56)
     }
     .padding({
-      left: 16,
-      top: 36
+      left: DeviceUtils.getResponsivePadding(16),
+      top: DeviceUtils.getResponsivePadding(36)
     })
     .alignItems(HorizontalAlign.End)
-    .margin({ top: 36 })
+    .margin({ top: DeviceUtils.getResponsiveMargin(36) })
     .width('100%')
   }
 
@@ -51,26 +54,26 @@ struct Index {
       Column() {
         Column() {
           Text($r('app.string.explanation'))
-            .fontSize(15)
-            .lineHeight(20)
+            .fontSize(DeviceUtils.getResponsiveFontSize(15))
+            .lineHeight(DeviceUtils.getResponsiveFontSize(20))
             .fontWeight(FontWeight.Bold)
             .width('100%')
-            .margin({ bottom: 8 })
+            .margin({ bottom: DeviceUtils.getResponsiveMargin(8) })
           ForEach(this.introductions, (item: string) => {
             Text($r(item))
-              .fontSize(13)
+              .fontSize(DeviceUtils.getResponsiveFontSize(13))
               .opacity(0.6)
-              .lineHeight(20)
+              .lineHeight(DeviceUtils.getResponsiveFontSize(20))
           }, (item: string) => JSON.stringify(item))
         }
         .width('100%')
         .height('auto')
         .alignItems(HorizontalAlign.Start)
         .padding({
-          left: 12,
-          right: 12,
-          bottom: 12,
-          top: 12
+          left: DeviceUtils.getResponsivePadding(12),
+          right: DeviceUtils.getResponsivePadding(12),
+          bottom: DeviceUtils.getResponsivePadding(12),
+          top: DeviceUtils.getResponsivePadding(12)
         })
         .backgroundColor('#F1F3F5')
         .borderRadius(16)
@@ -81,16 +84,22 @@ struct Index {
           .width('100%')
           .buttonStyle(ButtonStyleMode.NORMAL)
           .onClick(() => {
-            this.pathStack.pushPathByName('player', null);
+            Logger.info('Index', 'Playback page button clicked, navigating to player page');
+            try {
+              this.pathStack.pushPathByName('player', null);
+              Logger.info('Index', 'Navigation to player page initiated');
+            } catch (error) {
+              Logger.error('Index', `Failed to navigate to player page: ${JSON.stringify(error)}`);
+            }
           })
       }
       .width('100%')
       .height('100%')
       .padding({
-        left: 16,
-        right: 16,
-        top: 16,
-        bottom: 164
+        left: DeviceUtils.getResponsivePadding(16),
+        right: DeviceUtils.getResponsivePadding(16),
+        top: DeviceUtils.getResponsivePadding(16),
+        bottom: DeviceUtils.getResponsivePadding(164)
       })
     }
     .hideToolBar(true)

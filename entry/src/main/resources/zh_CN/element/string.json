@@ -155,6 +155,14 @@
     {
       "name": "enable_eq",
       "value": "启用均衡器"
+    },
+    {
+      "name": "volume_keys_disabled",
+      "value": "音量键已禁用"
+    },
+    {
+      "name": "volume_keys_enabled",
+      "value": "音量键已启用"
     }
   ]
 }

@@ -147,6 +147,14 @@
     {
       "name": "enable_eq",
       "value": "Enable EQ"
+    },
+    {
+      "name": "volume_keys_disabled",
+      "value": "Volume keys disabled"
+    },
+    {
+      "name": "volume_keys_enabled",
+      "value": "Volume keys enabled"
     }
   ]
 }
