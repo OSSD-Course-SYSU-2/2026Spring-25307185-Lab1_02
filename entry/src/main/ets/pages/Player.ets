@@ -73,6 +73,9 @@ struct Player {
     this.keyIntercept();
     this.audioRendererController = AppStorage.get('audioRendererController');
     
+    // Handle continuation data if available
+    this.handleContinuationData();
+    
     // Log initial EQ settings
     Logger.info('Player', `Initial EQ settings - Enabled: ${this.eqEnabled}, Mode: ${this.eqMode}, Bands: ${JSON.stringify(this.eqBands)}`);
     Logger.info('Player', `EQ change listeners registered for Player component`);
@@ -92,6 +95,41 @@ struct Player {
     }).then(() => {
       Logger.info('setWindowSystemBarProperties success ');
     })
+  }
+  
+  /**
+   * Handle continuation data from cross-device migration
+   */
+  private handleContinuationData(): void {
+    const continuationReady = AppStorage.get<boolean>('continuationReady');
+    if (!continuationReady) {
+      return;
+    }
+    
+    Logger.info('Player', 'Processing continuation data');
+    
+    // Restore song index
+    const continueSongIndex = AppStorage.get<number>('continueSongIndex');
+    if (continueSongIndex !== undefined && continueSongIndex >= 0 && continueSongIndex < songDataList.length) {
+      this.imageLabel = songDataList[continueSongIndex].label;
+      AppStorage.setOrCreate('currentSongIndex', continueSongIndex);
+      Logger.info('Player', `Restored song index: ${continueSongIndex}`);
+    }
+    
+    // Restore volume
+    const continueVolume = AppStorage.get<number>('continueVolume');
+    if (continueVolume !== undefined) {
+      this.volume = continueVolume;
+      Logger.info('Player', `Restored volume: ${continueVolume}`);
+    }
+    
+    // Clear continuation flags
+    AppStorage.setOrCreate('continuationReady', false);
+    AppStorage.delete('continueSongIndex');
+    AppStorage.delete('continueIsPlaying');
+    AppStorage.delete('continueVolume');
+    
+    Logger.info('Player', 'Continuation data processed successfully');
   }
 
   aboutToDisappear(): void {

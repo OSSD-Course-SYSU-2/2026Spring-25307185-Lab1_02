@@ -8,6 +8,7 @@ string auto_balance_description 0x01000009
 string back 0x0100003d
 string compression_strength 0x0100000a
 string disable 0x0100000b
+string distributed_datasync_reason 0x01000042
 string done 0x0100003e
 string enable_eq 0x0100003f
 string eq_db 0x0100000c

@@ -163,6 +163,10 @@
     {
       "name": "volume_keys_enabled",
       "value": "音量键已启用"
+    },
+    {
+      "name": "distributed_datasync_reason",
+      "value": "此权限用于跨设备自由流转功能，允许应用在不同设备间同步播放状态"
     }
   ]
 }

@@ -155,6 +155,10 @@
     {
       "name": "volume_keys_enabled",
       "value": "Volume keys enabled"
+    },
+    {
+      "name": "distributed_datasync_reason",
+      "value": "This permission is required for cross-device continuation feature, allowing the app to sync playback state across devices"
     }
   ]
 }

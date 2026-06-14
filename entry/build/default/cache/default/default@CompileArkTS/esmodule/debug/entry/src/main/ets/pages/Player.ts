@@ -293,6 +293,8 @@ class Player extends ViewPU {
         this.windowHeight = DeviceUtils.getScreenHeight();
         this.keyIntercept();
         this.audioRendererController = AppStorage.get('audioRendererController');
+        // Handle continuation data if available
+        this.handleContinuationData();
         // Log initial EQ settings
         Logger.info('Player', `Initial EQ settings - Enabled: ${this.eqEnabled}, Mode: ${this.eqMode}, Bands: ${JSON.stringify(this.eqBands)}`);
         Logger.info('Player', `EQ change listeners registered for Player component`);
@@ -310,6 +312,35 @@ class Player extends ViewPU {
         }).then(() => {
             Logger.info('setWindowSystemBarProperties success ');
         });
+    }
+    /**
+     * Handle continuation data from cross-device migration
+     */
+    private handleContinuationData(): void {
+        const continuationReady = AppStorage.get<boolean>('continuationReady');
+        if (!continuationReady) {
+            return;
+        }
+        Logger.info('Player', 'Processing continuation data');
+        // Restore song index
+        const continueSongIndex = AppStorage.get<number>('continueSongIndex');
+        if (continueSongIndex !== undefined && continueSongIndex >= 0 && continueSongIndex < songDataList.length) {
+            this.imageLabel = songDataList[continueSongIndex].label;
+            AppStorage.setOrCreate('currentSongIndex', continueSongIndex);
+            Logger.info('Player', `Restored song index: ${continueSongIndex}`);
+        }
+        // Restore volume
+        const continueVolume = AppStorage.get<number>('continueVolume');
+        if (continueVolume !== undefined) {
+            this.volume = continueVolume;
+            Logger.info('Player', `Restored volume: ${continueVolume}`);
+        }
+        // Clear continuation flags
+        AppStorage.setOrCreate('continuationReady', false);
+        AppStorage.delete('continueSongIndex');
+        AppStorage.delete('continueIsPlaying');
+        AppStorage.delete('continueVolume');
+        Logger.info('Player', 'Continuation data processed successfully');
     }
     aboutToDisappear(): void {
         AppStorage.setOrCreate('progress', undefined);
@@ -387,7 +418,7 @@ class Player extends ViewPU {
                         if (isInitialRender) {
                             let componentCall = new 
                             // Do not display the system volume bar.
-                            SetVolume(this, { volume: this.volume }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 167, col: 9 });
+                            SetVolume(this, { volume: this.volume }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 205, col: 9 });
                             ViewPU.create(componentCall);
                             let paramsLambda = () => {
                                 return {
@@ -435,7 +466,7 @@ class Player extends ViewPU {
                             SystemVolumePanel(this, {
                                 volume: this.__volume,
                                 volumeVisible: this.__systemVolumeVisible
-                            }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 170, col: 11 });
+                            }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 208, col: 11 });
                             ViewPU.create(componentCall);
                             let paramsLambda = () => {
                                 return {
@@ -475,7 +506,7 @@ class Player extends ViewPU {
                 {
                     this.observeComponentCreation2((elmtId, isInitialRender) => {
                         if (isInitialRender) {
-                            let componentCall = new ControlAreaComponent(this, { songData: songDataList[0], imageColor: this.imageColor }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 207, col: 11 });
+                            let componentCall = new ControlAreaComponent(this, { songData: songDataList[0], imageColor: this.imageColor }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 245, col: 11 });
                             ViewPU.create(componentCall);
                             let paramsLambda = () => {
                                 return {
@@ -877,7 +908,7 @@ class VolumeSettingComponent extends ViewPU {
                         volumeVisible: true,
                         volumeType: VolumeType.AUDIOSTREAM,
                         Percentage: 50
-                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 476, col: 9 });
+                    }, undefined, elmtId, () => { }, { page: "entry/src/main/ets/pages/Player.ets", line: 514, col: 9 });
                     ViewPU.create(componentCall);
                     let paramsLambda = () => {
                         return {

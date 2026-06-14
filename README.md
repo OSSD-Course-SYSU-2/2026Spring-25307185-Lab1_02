@@ -4,7 +4,7 @@
 
 此项目基于华为的官方演示代码的[音频流音量管理](https://gitcode.com/HarmonyOS_Samples/audio-volume-management)进行开发
 
-本案例展示如何获取音量、设置音量、使用手势调节音量、自定义音量面板、屏蔽音量键、自动平衡音量功能以及10段均衡器（EQ）调节功能，且支持多端部署。
+本案例展示如何获取音量、设置音量、使用手势调节音量、自定义音量面板、屏蔽音量键、自动平衡音量功能以及10段均衡器（EQ）调节功能，且支持多端部署与自由流转。
 
 ## 主要功能
 - ✅ 系统音量管理
@@ -17,6 +17,7 @@
 - ✅ 5种预设EQ模式（Flat, Rock, Pop, Jazz, Classical）
 - ✅ 自定义EQ频段调节
 - ✅ 实时音频效果应用
+- ✅ 自由流转（跨设备接续）
 
 
 ## 效果预览
@@ -105,6 +106,67 @@
    - 在EQ页面添加"Test EQ Apply"按钮
    - 在Player启动时添加EQ测试日志
    - 增强错误处理和状态验证
+
+## 自由流转支持
+
+本项目支持HarmonyOS自由流转能力，实现跨设备无缝接续体验。
+
+### 功能特性
+
+1. **应用接续**：支持在不同HarmonyOS设备间无缝切换，保持播放状态
+2. **状态同步**：自动同步以下数据：
+   - 当前播放歌曲索引
+   - 播放状态（播放/暂停）
+   - 音量设置
+   - 自动平衡音量设置
+   - EQ均衡器设置
+3. **无感切换**：用户在设备间切换时，应用状态自动恢复
+
+### 使用条件
+
+1. **设备要求**：
+   - 双端设备均为HarmonyOS 6.0.0及以上版本
+   - 双端设备登录同一华为账号
+   - 双端设备打开WLAN和蓝牙开关
+   - 双端设备在"设置 > 多设备协同 > 接续"中开启接续功能
+
+2. **操作方式**：
+   - 在源设备上打开应用并开始播放
+   - 在目标设备的Dock栏或任务管理器中点击应用图标
+   - 应用自动在目标设备恢复播放状态
+
+### 技术实现
+
+1. **配置文件**：
+   - `module.json5`中设置`continuable: true`
+   - 申请`ohos.permission.DISTRIBUTED_DATASYNC`权限
+
+2. **数据保存**（`onContinue`回调）：
+   ```typescript
+   onContinue(wantParam: Record<string, Object>): AbilityConstant.OnContinueResult {
+     // 保存播放状态、音量设置、EQ设置等
+     wantParam['currentSongIndex'] = currentSongIndex;
+     wantParam['isPlaying'] = isPlaying;
+     wantParam['currentVolume'] = currentVolume;
+     // ... 更多数据
+     return AbilityConstant.OnContinueResult.AGREE;
+   }
+   ```
+
+3. **数据恢复**（`onCreate`/`onNewWant`回调）：
+   ```typescript
+   if (launchParam.launchReason === AbilityConstant.LaunchReason.CONTINUATION) {
+     // 从want.parameters中恢复数据
+     this.restoreContinueData(want);
+   }
+   ```
+
+### 开发注意事项
+
+- 数据大小限制：通过wantParam传输的数据需控制在100KB以下
+- 生命周期：`onCreate`用于冷启动，`onNewWant`用于热启动
+- 状态管理：使用AppStorage实现跨组件数据同步
+- 错误处理：在onContinue中返回REJECT可拒绝迁移
 
 ## 多端部署支持
 

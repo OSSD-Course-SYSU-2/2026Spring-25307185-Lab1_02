@@ -263,5 +263,9 @@
 			"type":	"string",
 			"name":	"volume_keys_enabled",
 			"id":	"0x01000041"
+		}, {
+			"type":	"string",
+			"name":	"distributed_datasync_reason",
+			"id":	"0x01000042"
 		}]
 }
