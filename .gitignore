@@ -1,0 +1,57 @@
+# HarmonyOS 构建输出
+build/
+oh_modules/
+
+# hvigor 缓存
+.hvigor/
+.preview/
+
+# IDE 配置 (DevEco Studio / IntelliJ IDEA)
+.idea/workspace.xml
+.idea/shelf/
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/contentModel.xml
+
+# 签名文件和证书 (敏感信息，切勿上传!)
+*.p12
+*.p7b
+*.csr
+*.jks
+*.keystore
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 日志文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Node.js
+node_modules/
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# 打包文件
+*.zip
+*.tar
+*.tar.gz
+*.rar
