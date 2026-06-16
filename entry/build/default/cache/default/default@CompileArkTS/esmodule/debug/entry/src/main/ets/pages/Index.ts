@@ -68,6 +68,7 @@ class Index extends ViewPU {
     initialRender() {
         this.observeComponentCreation2((elmtId, isInitialRender) => {
             Navigation.create(this.pathStack, { moduleName: "entry", pagePath: "entry/src/main/ets/pages/Index", isUserCreateStack: true });
+            Navigation.mode(NavigationMode.Stack);
             Navigation.hideToolBar(true);
             Navigation.width('100%');
             Navigation.height('100%');

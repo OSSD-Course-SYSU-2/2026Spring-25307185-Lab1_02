@@ -102,6 +102,7 @@ struct Index {
         bottom: DeviceUtils.getResponsivePadding(164)
       })
     }
+    .mode(NavigationMode.Stack)
     .hideToolBar(true)
     .width('100%')
     .height('100%')

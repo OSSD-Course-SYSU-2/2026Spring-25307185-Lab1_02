@@ -7,13 +7,15 @@
         "INCLUDE_IN_BUILD": true,
         "IS_COMMAND_LINE_ENTRY_MODULE": true,
         "MODULE_TYPE": "entry",
+        "INCREMENTAL_TASKS": {
+          "COMPILE_ARKTS": true
+        },
         "IS_INCREMENTAL_MODULE": true
       }
     ],
     "NATIVE_COMPILER": "Default",
     "IS_FULL_BUILD": false,
-    "BUILD_MODE": "debug",
-    "USE_NORMALIZED_OHMURL": true
+    "BUILD_MODE": "debug"
   },
   "HVIGOR": {
     "IS_INCREMENTAL": true,
@@ -22,21 +24,22 @@
     "IS_HVIGORFILE_TYPE_CHECK": false,
     "TASK_TIME": {
       "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
-        "PreBuild": 417952100,
-        "CreateModuleInfo": 3007200,
-        "ConfigureCmake": 2216400,
-        "PreCheckSyscap": 1452500,
-        "ProcessIntegratedHsp": 3375600,
-        "BuildNativeWithCmake": 1790000,
-        "SyscapTransform": 38470200,
-        "ProcessStartupConfig": 4684100,
-        "BuildNativeWithNinja": 3083500,
-        "BuildJS": 6933100,
-        "ProcessCompiledResources": 2794100,
-        "PackingCheck": 26294200,
-        "SignHap": 9452000,
-        "CollectDebugSymbol": 4262000,
-        "assembleHap": 683200
+        "CreateModuleInfo": 1609100,
+        "ConfigureCmake": 441000,
+        "PreCheckSyscap": 454900,
+        "ProcessIntegratedHsp": 1046800,
+        "BuildNativeWithCmake": 438500,
+        "SyscapTransform": 4748900,
+        "ProcessStartupConfig": 3405300,
+        "BuildNativeWithNinja": 1137400,
+        "BuildJS": 5826500,
+        "CompileArkTS": 22046285300,
+        "ProcessCompiledResources": 3130300,
+        "PackageHap": 1289235600,
+        "PackingCheck": 25758300,
+        "SignHap": 9354900,
+        "CollectDebugSymbol": 4841500,
+        "assembleHap": 582400
       }
     },
     "APIS": [
@@ -47,7 +50,7 @@
       "ENABLE_CPP_FUNCTION_LEVEL_INCREMENTAL": false
     },
     "CONFIG_PROPERTIES": {},
-    "BUILD_ID": "202606141546433770",
-    "TOTAL_TIME": 7325278000
+    "TOTAL_TIME": 23793559200,
+    "BUILD_ID": "202606161642232660"
   }
 }
